@@ -1,0 +1,115 @@
+import sqlite3 as sql #sqlite kütüphanesi koda eklendi
+import time #Zaman kütühanesi koda eklendi
+
+psw = 0 
+tryagain = 0
+vt = sql.connect("personel_list1.db") #kodumuzu personel_list.db isimli veritabanına (db) bağladık. Eğer bu isimde bir db yoksa oluşturulur. 
+im = vt.cursor() #imlecimizi im ismine atadık. fonksiyonları im kısaltması ile çağıracağız. 
+while(psw == 0):
+    im.execute("""CREATE TABLE IF NOT EXISTS password(nickname , password)""") #eğer halihazırda yoksa nickname ve password bilgilerini içeren bir tablo oluturduk. 
+    if(tryagain == 0):
+        logorsign = input("Type 'login' to login\nType 'sign' to sign up:  ") #yeni bir hesapla mı giriş yapılacak halihazırda bulunan bir hesapla mı giriş yapılacak kullanıcıya soruldu
+    else:
+        pass
+    if(logorsign == 'sign' or tryagain == 1): #eğer yeni hesap oluşturulacaksa...
+        nickname = input("Nickname: ") #verileri alıyoruz
+        password1 = input("Password: ")
+        password2 = input("Password again: ") 
+        if(password1 == password2): 
+            psw = 0
+        else:
+            print("passwords are incompatible. Try Again") #eğer ard arda girilen iki şifre farklıysa kullanıcıyı tekrar hesap oluşturma kısmına gönderir. 
+            psw = 0
+            tryagain = 1
+        im.execute("""INSERT INTO password VALUES(? , ? )""" , (nickname , password1)) #gelen nickname ve password verileri tabloya işlenir. 
+        vt.commit() #hafızadaki veriyi veritabanına kaydeder. 
+        logorsign == ' ' #verileri db'ye kaydettiğimiz için eskilerini siliyorum. hem daha sonra kullanmak gerekebilir temiz dursunlar.
+        nickname = ' '
+        password1 = ' '
+        password2 = ' '
+    if(logorsign == 'login'): #eğer giriş yapılacaksa...
+        nickname = input("Nickname: ")
+        password = input("Password: ")
+        im.execute("""SELECT * FROM password""") #password tablosundan veriler çekilir
+        data = im.fetchall() #veriler data isimli list değişkenine kaydedildi                
+        for i in range(len(data)): #Datalar karşılaştırılıyor
+            im.execute("""SELECT * FROM password""")
+            data = im.fetchall()
+            if(data[i][0] == nickname and data[i][1] == password):
+                psw = 1
+                print("TRUE PASSWORD")
+                break
+            if(data[i][0] == nickname and data[i][1] != password):
+                psw = 0
+                print("WRONG PASSWORD")
+            if(data[i][0] != nickname and i == len(data)):
+                print("User Not Found")
+                
+
+im.execute("CREATE TABLE IF NOT EXISTS Personel( isim , soyisim , memleket , email , telefon_no , gorev)") #(eğer yoksa)Personel isimli tablo oluşturuldu.
+print("Personel Database v1.1 ")
+
+
+while(psw == 1):
+    x = 1 
+    if(x == 1):
+        choose = input("Type 'add' to add data \nType 'read' to read datas:  ")
+
+    while(choose == 'add'):
+        print("    ")
+        print("---------------")
+        print("   ")
+        print("Type esc to exit")
+        name = input("Name: ")
+        if(name == 'esc'):
+            choose = ' '
+            break
+        surname = input("Surname: ")
+        if(surname == 'esc'):
+            choose = ' '
+            break
+        place = input("Place of Birth: ")
+        if(place == 'esc'):
+            choose = ' '
+            break
+        
+        email = input("E-Mail Adress: ")
+        if(email == 'esc'):
+            choose = ' '
+            break
+        tel = input("Telephone Number: ")
+        if(tel == 'esc'):
+            choose = ' '
+            break
+        gorev = input("Job Position: ")
+        if(gorev == 'esc'):
+            choose = ' '
+            break
+        
+        data = [name , surname , place , email , tel , gorev]
+        print("Succesfully Saved")
+        print("---------------")
+        im.execute("""INSERT INTO personel VALUES
+                    (?, ?, ? , ? , ? , ?)""", (name , surname , place , email , tel , gorev))
+        vt.commit()
+        x = 0
+
+    if(x == 0):
+        choose = input("Type 'add' to add data \nType 'read' to read datas:  ")
+    if(choose == 'read'):
+        im.execute("""SELECT * FROM Personel""")
+        datass = im.fetchall()
+        print(datass)   
+        print("")
+        print("---------------")
+        print("")
+        print("---------------")
+        
+        
+        x = 1
+
+
+
+
+
+vt.close()
