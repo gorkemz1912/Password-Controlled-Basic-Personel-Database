@@ -1,6 +1,4 @@
 import sqlite3 as sql #sqlite kütüphanesi koda eklendi
-import time #Zaman kütühanesi koda eklendi
-
 psw = 0 
 tryagain = 0
 vt = sql.connect("personel_list1.db") #kodumuzu personel_list.db isimli veritabanına (db) bağladık. Eğer bu isimde bir db yoksa oluşturulur. 
@@ -58,7 +56,7 @@ while 1:
             print("---------------")
             print("   ")
             print("Type esc to exit")
-            no = input("ID: ")
+
             name = input("Name: ")
             if(name == 'esc'):
                 choose = ' '
@@ -71,7 +69,6 @@ while 1:
             if(place == 'esc'):
                 choose = ' '
                 break
-            
             email = input("E-Mail Adress: ")
             if(email == 'esc'):
                 choose = ' '
@@ -105,11 +102,9 @@ while 1:
                 print("Place of Birth: " , datass[l][2])
                 print("E-Mail Adress: " , datass[l][3])
                 print("GSM: " , datass[l][4])
-                print("Job Position" , datass[l][5])
+                print("Job Position: " , datass[l][5])
                 print("-----------")
-
-
-            #print(datass)   
+ 
             print("")
             print("---------------")
             print("")
@@ -118,20 +113,20 @@ while 1:
             psw = 0
             break
         elif(choose == 'update'):
-            print("basardik abi")
-            isim_change = input("Enter the name of the employee whose data you want to update: ")
+            name_change = input("Enter the name of the employee whose data you want to update: ")
             new_name = input("Enter the new name: ")
             new_surname = input("Enter the new surname: ")
             new_nationality = input("Enter the new place of birth: ")
             new_email = input("Enter the new E-mail adress: ")
             new_tel = input("Enter the new GSM: ")
             new_job = input("Enter the new position: ")
-("""INSERT INTO personel VALUES
-                        (?, ?, ? , ? , ? , ?)""", (name , surname , place , email , tel , gorev)) 
-
-            print(isim_change , new_name , new_surname , new_nationality , new_email , new_tel , new_job)
-            sql_update_query = """Update Personel set isim = 'Kimi' where isim = 'Sebastian'"""
-            im.execute(sql_update_query)
+            im.execute("""Update Personel set gorev = ? where isim = ?""" , (new_job , name_change))
+            im.execute("""Update Personel set telefon_no = ? where isim = ?""" , (new_tel , name_change))
+            im.execute("""Update Personel set email = ? where isim = ?""" , (new_email , name_change))
+            im.execute("""Update Personel set memleket = ? where isim = ?""" , (new_nationality , name_change))
+            im.execute("""Update Personel set soyisim = ? where isim = ?""" , (new_surname , name_change))
+            im.execute("""Update Personel set isim = ? where isim = ?""" , (new_name , name_change))
+            vt.commit()
 
 
         else:
